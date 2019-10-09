@@ -37,9 +37,15 @@ for rec in rec_gen(sys.argv[1]):
         and make sure supplied subject isn't already
         in record
         '''
-        if sub['name'] in dpla_local_map.keys() and dpla_local_map[sub['name']][0] not in [term['name'] for term in
-                                                                                           rec['sourceResource'][
-                                                                                               'subject']]:
-            rec['sourceResource']['subject'].append({'name': dpla_local_map[sub['name']][0]})
-            break
+        if sub['name'] in dpla_local_map.keys() and dpla_local_map[sub['name']][0][0] not in [term['name'] for term in
+                                                                                              rec['sourceResource'][
+                                                                                                  'subject']]:
+            if len(dpla_local_map[sub['name']]) > 1:
+                for item in dpla_local_map[sub['name']]:
+                    rec['sourceResource']['subject'].append({'name': item[0], "@id": item[1]})
+                break
+            else:
+                rec['sourceResource']['subject'].append(
+                    {'name': dpla_local_map[sub['name']][0][0], "@id": dpla_local_map[sub['name']][0][1]})
+                break
     out.write(json.dumps(rec) + '\n')
